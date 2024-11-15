@@ -1,22 +1,55 @@
 import pygame
-
+import random
 
 def main():
     try:
         pygame.init()
-        # You can draw the mole with this snippet:
-        # screen.blit(mole_image, mole_image.get_rect(topleft=(x,y)))
+        GRID_WIDTH = 32
+        GRID_HEIGHT = 32
+        GRID_COLS = 20
+        GRID_ROWS = 16
+        SCREEN_WIDTH = GRID_WIDTH * GRID_COLS
+        SCREEN_HEIGHT = GRID_HEIGHT * GRID_ROWS
+        BG_COLOR = "light blue"
+        GRID_COLOR = "black"
+
+        screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        pygame.display.set_caption("Whack-a-Mole")
+
         mole_image = pygame.image.load("mole.png")
-        screen = pygame.display.set_mode((640, 512))
+
+        mole_x = 0
+        mole_y = 0
+
         clock = pygame.time.Clock()
         running = True
+
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-            screen.fill("light green")
+
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_x, mouse_y = event.pos
+                    mole_rect = pygame.Rect(mole_x, mole_y, GRID_WIDTH, GRID_HEIGHT)
+                    if mole_rect.collidepoint(mouse_x, mouse_y):
+                        # Move mole to a random square
+                        mole_x = random.randrange(0, GRID_COLS) * GRID_WIDTH
+                        mole_y = random.randrange(0, GRID_ROWS) * GRID_HEIGHT
+
+            screen.fill(BG_COLOR)
+
+            for x in range(0, SCREEN_WIDTH, GRID_WIDTH):
+                pygame.draw.line(screen, GRID_COLOR, (x, 0), (x, SCREEN_HEIGHT))
+            for y in range(0, SCREEN_HEIGHT, GRID_HEIGHT):
+                pygame.draw.line(screen, GRID_COLOR, (0, y), (SCREEN_WIDTH, y))
+
+            screen.blit(mole_image, (mole_x, mole_y))
+
             pygame.display.flip()
+
             clock.tick(60)
+
     finally:
         pygame.quit()
 
